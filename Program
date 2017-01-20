@@ -1,0 +1,97 @@
+
+#include "U8glib.h"
+
+U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE|U8G_I2C_OPT_DEV_0);
+
+unsigned long count = 2; // why check 0 or 1 for being prime?
+unsigned long lastprime = 0; // last prime found
+unsigned long total = 0;  //total number of primes found
+
+
+
+void setup(void) {
+
+//  pinMode(LED_BUILTIN, OUTPUT);
+  
+  if ( u8g.getMode() == U8G_MODE_R3G3B2 ) {
+    u8g.setColorIndex(255);     // white
+  }
+  else if ( u8g.getMode() == U8G_MODE_GRAY2BIT ) {
+    u8g.setColorIndex(3);         // max intensity
+  }
+  else if ( u8g.getMode() == U8G_MODE_BW ) {
+    u8g.setColorIndex(1);         // pixel on
+  }
+  else if ( u8g.getMode() == U8G_MODE_HICOLOR ) {
+    u8g.setHiColorByRGB(255,255,255);
+  }
+}
+
+void loop(void) {
+  // picture loop
+       // turn the LED off by making the voltage LOW
+
+ //numbersfound = String(count);
+  u8g.firstPage();  
+  do {
+    draw();
+  } while( u8g.nextPage() );
+  
+  // rebuild the picture after some delay
+  //delay(1);
+  
+   if(isPrime(count)) {
+    lastprime = count;
+    total++;
+ //  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+   // delay(10);
+   // digitalWrite(LED_BUILTIN, LOW); 
+   }
+ 
+  count++;
+}
+
+boolean isPrime(unsigned long x) {
+boolean prime = true;
+
+  for(unsigned long i = 2; i <= x/2; i++) { //Loop every number up to half
+    if(x % i == 0) { //If it's divisible...
+      prime = false; //It isn't prime!
+      break;
+    }
+  }
+  
+  return prime;
+  
+}
+
+void draw(void) {
+  
+    u8g.setFont(u8g_font_helvB12);
+    
+    char buf[10];
+  //  sprintf (buf, "%d", count);
+    
+   //u8g.drawStr(72, 15, buf);
+
+    dtostrf(count, 8, 0, buf);
+   
+    u8g.drawStr(62, 15, buf);
+    u8g.drawStr(0 , 15, "Testing:");
+
+    char nuf[10];
+   //sprintf (nuf, "%d", lastprime);
+    dtostrf(lastprime, 8, 0, nuf);
+    u8g.drawStr(62, 35, nuf);
+    u8g.drawStr(0, 35, "Current:");
+
+     char huf[10];
+   // sprintf (huf, "%d", total);
+    dtostrf(total, 8, 0, huf);
+    u8g.drawStr(62, 55, huf);
+    u8g.drawStr(0, 55, "Found:");
+      
+   
+    
+     
+}
